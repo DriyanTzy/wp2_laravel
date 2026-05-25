@@ -1,0 +1,93 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #e5e5e5;
+}
+
+/* CONTAINER */
+.container{
+    width: 1100px;
+    margin: 20px auto;
+    background: white;
+    border: 1px solid #ccc;
+}
+
+/* HEADER */
+.header{
+    background: #1f1f1f;
+    color: white;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.judul{
+    float: left;
+}
+
+.judul h1{
+    margin: 0;
+}
+
+.judul p{
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+/* MENU */
+.menu{
+    float: right;
+    margin-top: 20px;
+}
+
+.menu a{
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 16px;
+}
+
+.menu a:hover{
+    color: yellow;
+}
+
+/* CONTENT */
+.content{
+    padding: 20px;
+}
+
+.content h2{
+    margin-bottom: 20px;
+}
+
+/* TABLE */
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th{
+    background: #444;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+td{
+    border: 1px solid #ddd;
+    padding: 12px;
+    vertical-align: top;
+    text-align: justify;
+}
+
+tr:nth-child(even){
+    background: #f5f5f5;
+}
+
+/* FOOTER */
+.footer{
+    background: #1f1f1f;
+    color: white;
+    padding: 15px 20px;
+    margin-top: 20px;
+}
