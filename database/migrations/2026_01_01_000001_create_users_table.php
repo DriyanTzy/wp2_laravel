@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('photo')->nullable();        // foto profil
             $table->text('bio')->nullable();            // bio profil
             $table->integer('points')->default(0);      // poin buat ambil dataset
-            $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable();  // Tambah ini
+            $table->rememberToken();                             // Tambah ini
+    
             $table->timestamps();
         });
     }

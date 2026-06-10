@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dataset;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,21 +15,59 @@ use Illuminate\Validation\Rules\Password;
 class ProfileController extends Controller
 {
     // GET /api/profile/{username} — publik, bisa dilihat siapapun
-    public function show(string $username): JsonResponse
+    public function show($username)
     {
-        $user = User::where('username', $username)
-            ->with(['posts' => fn($q) => $q->latest()])
-            ->firstOrFail();
-
+        $user = User::where('username', $username)->orWhere('name', $username)->firstOrFail();
+        
+        // Statistik
+        $datasets = Dataset::where('user_id', $user->id)->withCount('accessedBy')->latest()->get();
+        $totalDownloads = $datasets->sum('present_count');
+        $avgRating = $datasets->avg('rating') ?? 4.4; // asumsi ada kolom rating atau dummy
+        
+        // Postingan user
+        $posts = Post::where('user_id', $user->id)->with('dataset')->latest()->get();
+        
         return response()->json([
             'user' => [
-                'id'       => $user->id,
-                'name'     => $user->name,
+                'id' => $user->id,
+                'name' => $user->name,
                 'username' => $user->username,
-                'bio'      => $user->bio,
-                'photo'    => $user->photo ? Storage::url($user->photo) : null,
+                'email' => $user->email,
+                'photo' => $user->photo,
+                'bio' => $user->bio,
+                'institution' => $user->institution,
+                'location' => $user->location,
+                'joined' => $user->created_at->format('F Y'),
             ],
-            'posts' => $user->posts,
+            'stats' => [
+                'total_datasets' => $datasets->count(),
+                'total_downloads' => $totalDownloads,
+                'avg_rating' => number_format($avgRating, 1),
+            ],
+            'datasets' => $datasets->map(function($ds) {
+                return [
+                    'id' => $ds->id,
+                    'title' => $ds->title,
+                    'class' => $ds->class,
+                    'present_count' => $ds->present_count ?? 0,
+                    'created_at' => $ds->created_at->diffForHumans(),
+                ];
+            }),
+            'posts' => $posts->map(function($post) {
+                return [
+                    'id' => $post->id,
+                    'content' => $post->content,
+                    'dataset' => $post->dataset ? [
+                        'id' => $post->dataset->id,
+                        'title' => $post->dataset->title,
+                        'class' => $post->dataset->class,
+                    ] : null,
+                    'likes_count' => $post->likes_count,
+                    'comments_count' => $post->comments_count,
+                    'shares_count' => $post->shares_count,
+                    'created_at' => $post->created_at->diffForHumans(),
+                ];
+            }),
         ]);
     }
 
@@ -94,5 +134,15 @@ class ProfileController extends Controller
         return response()->json([
             'message' => 'Password berhasil diubah.',
         ]);
+    }
+    public function showPublic($username)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+        return view('profile.public', compact('user'));
+    }
+
+    public function edit()
+    {
+        return view('profile.edit'); // form edit profil Anda yang lama
     }
 }

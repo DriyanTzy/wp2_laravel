@@ -2,22 +2,51 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // User::factory(10)->create();
+        // User admin
+        User::create([
+            'name' => 'Driyan90',
+            'username' => 'driyan90',
+            'email' => 'driyanHytam@email.com',
+            'password' => Hash::make('password'),
+            'bio' => 'Data enthusiast',
+            'points' => 100,
+            'photo' => null,
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User lain contoh
+        User::create([
+            'name' => 'Rizal Akbar',
+            'username' => 'rizalbar',
+            'email' => 'rizalbar@gmail.com',
+            'password' => Hash::make('password'),
+            'bio' => 'Peneliti independen yang berfokus pada analisis perilaku pengguna dan survei sosial.',
+            'points' => 50,
+        ]);
+
+        User::create([
+            'name' => 'Imam Mahdi',
+            'username' => 'imammahdi',
+            'email' => 'coex21@gmail.com',
+            'password' => Hash::make('password'),
+            'bio' => 'Data scientist',
+            'points' => 75,
+        ]);
+
+        User::create([
+            'name' => 'Anet Kosasih',
+            'username' => 'anetk',
+            'email' => 'anetkasi@gmail.com',
+            'password' => Hash::make('password'),
+            'bio' => 'Analyst',
+            'points' => 30,
         ]);
     }
 }
