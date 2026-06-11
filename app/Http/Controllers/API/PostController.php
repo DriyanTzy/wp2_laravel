@@ -4,58 +4,47 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    // POST /api/posts — buat post baru
-    public function store(Request $request): JsonResponse
+    // GET /api/posts/feed
+    public function feed()
+    {
+        $posts = Post::with('user')->latest()->get();
+        $user = auth()->user();
+        foreach ($posts as $post) {
+            // Cek apakah user sudah like (opsional, jika ada tabel likes)
+            $post->is_liked = false;
+        }
+        return response()->json(['posts' => $posts]);
+    }
+
+    // POST /api/posts
+    public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'content'     => ['nullable', 'string'],
-            'survey_link' => ['nullable', 'url'],
+            'title'       => 'required|string|max:255',
+            'content'     => 'nullable|string',
+            'survey_link' => 'nullable|url|max:500',
         ]);
 
         $post = $request->user()->posts()->create($validated);
 
         return response()->json([
-            'message' => 'Post berhasil dibuat.',
-            'post'    => $post,
+            'message' => 'Postingan berhasil dibuat',
+            'post'    => $post->load('user')
         ], 201);
     }
 
-    // PUT /api/posts/{id} — edit post
-    public function update(Request $request, Post $post): JsonResponse
+    // POST /api/posts/{id}/like
+    public function toggleLike(Post $post)
     {
-        if ($post->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
-        }
-
-        $validated = $request->validate([
-            'title'       => ['sometimes', 'string', 'max:255'],
-            'content'     => ['sometimes', 'nullable', 'string'],
-            'survey_link' => ['sometimes', 'nullable', 'url'],
-        ]);
-
-        $post->update($validated);
-
+        // Implementasi like/unlike jika punya tabel likes
+        // Sementara return dummy
         return response()->json([
-            'message' => 'Post berhasil diupdate.',
-            'post'    => $post->fresh(),
+            'liked' => true,
+            'likes_count' => $post->likes_count + 1
         ]);
-    }
-
-    // DELETE /api/posts/{id}
-    public function destroy(Request $request, Post $post): JsonResponse
-    {
-        if ($post->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
-        }
-
-        $post->delete();
-
-        return response()->json(['message' => 'Post berhasil dihapus.']);
     }
 }

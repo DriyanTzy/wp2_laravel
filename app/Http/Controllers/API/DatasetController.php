@@ -11,12 +11,16 @@ use Illuminate\Support\Facades\Storage;
 class DatasetController extends Controller
 {
     // GET /api/datasets — list semua dataset
-    public function index(): JsonResponse
-    {
-        $datasets = Dataset::with('user:id,name,username,photo')
-            ->withCount('accessedBy')
-            ->latest()
-            ->get();
+   public function index(Request $request): JsonResponse
+{
+        $query = Dataset::with('user:id,name,username,photo')
+            ->withCount('accessedBy');
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $datasets = $query->latest()->get();
 
         return response()->json(['datasets' => $datasets]);
     }
@@ -132,5 +136,21 @@ class DatasetController extends Controller
         $dataset->delete();
 
         return response()->json(['message' => 'Dataset berhasil dihapus.']);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+        if (strlen($query) < 2) {
+            return response()->json(['datasets' => []]);
+        }
+
+        $datasets = Dataset::with('user')
+            ->where('title', 'like', "%{$query}%")
+            ->orWhere('class', 'like', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'title', 'class', 'user_id']);
+
+        return response()->json(['datasets' => $datasets]);
     }
 }

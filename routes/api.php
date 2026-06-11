@@ -42,10 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile/password',     [ProfileController::class, 'updatePassword']);
 
     // Datasets
-    Route::post('/datasets',                    [DatasetController::class, 'store']);
-    Route::put('/datasets/{dataset}',             [DatasetController::class, 'update']);
-    Route::post('/datasets/{dataset}/access',   [DatasetController::class, 'access']);
-    Route::delete('/datasets/{dataset}',        [DatasetController::class, 'destroy']);
+    Route::get('/datasets', [DatasetController::class, 'index']);
+    Route::get('/datasets/{id}', [DatasetController::class, 'show']);
+    Route::post('/datasets', [DatasetController::class, 'store']);
+    Route::put('/datasets/{id}', [DatasetController::class, 'update']);
+    Route::post('/datasets/{id}/access', [DatasetController::class, 'access']);
+    Route::delete('/datasets/{id}', [DatasetController::class, 'destroy']);
 
     // Surveys
     Route::post('/surveys',                     [SurveyController::class, 'store']);
@@ -57,4 +59,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts',           [PostController::class, 'store']);
     Route::put('/posts/{post}',     [PostController::class, 'update']);
     Route::delete('/posts/{post}',  [PostController::class, 'destroy']);
+
+    // Search user
+    Route::get('/users/search', [ProfileController::class, 'search']);
+    Route::get('/profile/{username}', [ProfileController::class, 'show']);
+
+    // Dataset dengan filter user_id (sudah ada, pastikan method index menerima Request)
+    Route::get('/datasets', [DatasetController::class, 'index']);
+
+    // Search datasets
+    Route::get('/datasets/search', [DatasetController::class, 'search']);
+
+    // Feed (semua post terbaru)
+    Route::get('/posts/feed', [PostController::class, 'feed']);
+    Route::post('/posts/{post}/like', [PostController::class, 'toggleLike']);
+
 });
