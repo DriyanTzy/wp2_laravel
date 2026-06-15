@@ -1,0 +1,236 @@
+/* ═══════════════════════════════════════
+   DATASET SHOW PAGE
+═══════════════════════════════════════ */
+
+.ds-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+/* ── Back link ── */
+.ds-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 24px;
+    transition: color .2s;
+}
+.ds-back:hover { color: #111; }
+.ds-back i { font-size: 0.85rem; }
+
+/* ── Main card ── */
+.ds-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+}
+
+/* ── Header row: thumbnail + info ── */
+.ds-header {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+}
+
+.ds-thumbnail {
+    width: 260px;
+    height: 180px;
+    border-radius: 14px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #d0d8e8;
+}
+
+.ds-info {
+    flex: 1;
+}
+
+.ds-info h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.ds-publisher {
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+/* ── Stats row ── */
+.ds-stats {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0;
+}
+
+.ds-stat {
+    flex: 1;
+    text-align: center;
+    padding: 0 16px;
+    border-right: 1px solid #f0f0f0;
+}
+
+.ds-stat:last-child { border-right: none; }
+
+.ds-stat-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.ds-stat-value i {
+    color: #f59e0b;
+    font-size: 0.85rem;
+}
+
+.ds-stat-label {
+    font-size: 0.73rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* ── Download button ── */
+.ds-download-wrap {
+    margin-bottom: 16px;
+}
+
+.btn-download-dataset {
+    width: 100%;
+    padding: 14px;
+    background: #ffffff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    transition: background .2s, border-color .2s;
+    text-decoration: none;
+}
+
+.btn-download-dataset:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.btn-download-dataset i { color: #555; }
+
+/* ── About section ── */
+.ds-about {
+    background: #f7f7f7;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.ds-about h2 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+}
+
+.ds-about p {
+    font-size: 0.875rem;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+/* ── Tags ── */
+.ds-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.ds-tag {
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #444;
+}
+
+/* ── Meta grid ── */
+.ds-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.ds-meta-item {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.ds-meta-label {
+    font-size: 0.73rem;
+    color: #aaa;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.ds-meta-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* ── Loading / error state ── */
+.ds-loading {
+    text-align: center;
+    padding: 60px 0;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.ds-error {
+    text-align: center;
+    padding: 60px 0;
+    color: #e74c3c;
+    font-size: 0.9rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .ds-header {
+        flex-direction: column;
+    }
+    .ds-thumbnail {
+        width: 100%;
+        height: 200px;
+    }
+    .ds-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .ds-card {
+        padding: 20px;
+    }
+}

@@ -18,15 +18,15 @@ class ProfileController extends Controller
     public function show($username)
     {
         $user = User::where('username', $username)->orWhere('name', $username)->firstOrFail();
-        
+
         // Statistik
         $datasets = Dataset::where('user_id', $user->id)->withCount('accessedBy')->latest()->get();
         $totalDownloads = $datasets->sum('present_count');
         $avgRating = $datasets->avg('rating') ?? 4.4; // asumsi ada kolom rating atau dummy
-        
+
         // Postingan user
         $posts = Post::where('user_id', $user->id)->with('dataset')->latest()->get();
-        
+
         return response()->json([
             'user' => [
                 'id' => $user->id,
@@ -116,7 +116,7 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => ['required', 'string'],
-            'password'         => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'password'         => ['required', Password::min(8)->letters()->numbers()],
         ]);
 
         $user = $request->user();

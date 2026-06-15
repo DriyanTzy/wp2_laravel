@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
@@ -22,7 +21,6 @@ class RegisterRequest extends FormRequest
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => [
                 'required',
-                'confirmed',
                 Password::min(8)->letters()->numbers(),
             ],
         ];
@@ -33,18 +31,19 @@ class RegisterRequest extends FormRequest
         return [
             'name.required'       => 'Nama wajib diisi.',
             'username.required'   => 'Username wajib diisi.',
-            'username.unique'     => 'Username sudah dipakai.',
-            'username.alpha_dash' => 'Username hanya boleh huruf, angka, - dan _.',
+            'username.unique'     => 'Username sudah dipakai, coba yang lain.',
+            'username.alpha_dash' => 'Username hanya boleh huruf, angka, tanda - dan _.',
             'email.required'      => 'Email wajib diisi.',
             'email.unique'        => 'Email sudah terdaftar.',
             'password.required'   => 'Password wajib diisi.',
-            'password.confirmed'  => 'Konfirmasi password tidak cocok.',
+            'password.min'        => 'Password minimal 8 karakter.',
         ];
     }
 
-    // Override biar validasi gagal balik JSON, bukan redirect
     protected function failedValidation(Validator $validator)
-    {
+{
+    // Hanya throw JSON kalau memang request dari API
+    if ($this->expectsJson() || $this->is('api/*')) {
         throw new HttpResponseException(
             response()->json([
                 'message' => 'Data yang dikirim tidak valid.',
@@ -52,4 +51,8 @@ class RegisterRequest extends FormRequest
             ], 422)
         );
     }
+
+    // Untuk form Blade biasa, pakai default Laravel (redirect back + errors)
+    parent::failedValidation($validator);
+}
 }
