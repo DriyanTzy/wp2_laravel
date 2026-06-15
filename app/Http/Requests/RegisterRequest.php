@@ -15,32 +15,30 @@ class RegisterRequest extends FormRequest
     }
 
     public function rules(): array
-    {
-        return [
-            'name'     => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:50', 'unique:users,username', 'alpha_dash'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => [
-                'required',
-                'confirmed',
-                Password::min(8)->letters()->numbers(),
-            ],
-        ];
-    }
+{
+    return [
+        'name'     => ['required', 'string', 'max:255'],
+        'username' => ['required', 'string', 'max:50', 'unique:users,username', 'alpha_dash'],
+        'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
+        'password' => [
+            'required',
+            Password::min(8)->letters()->numbers(),
+        ],
+    ];
+}
 
     public function messages(): array
-    {
-        return [
-            'name.required'       => 'Nama wajib diisi.',
-            'username.required'   => 'Username wajib diisi.',
-            'username.unique'     => 'Username sudah dipakai.',
-            'username.alpha_dash' => 'Username hanya boleh huruf, angka, - dan _.',
-            'email.required'      => 'Email wajib diisi.',
-            'email.unique'        => 'Email sudah terdaftar.',
-            'password.required'   => 'Password wajib diisi.',
-            'password.confirmed'  => 'Konfirmasi password tidak cocok.',
-        ];
-    }
+{
+    return [
+        'name.required'       => 'Nama wajib diisi.',
+        'username.required'   => 'Username wajib diisi.',
+        'username.unique'     => 'Username sudah dipakai.',
+        'username.alpha_dash' => 'Username hanya boleh huruf, angka, - dan _.',
+        'email.required'      => 'Email wajib diisi.',
+        'email.unique'        => 'Email sudah terdaftar.',
+        'password.required'   => 'Password wajib diisi.',
+    ];
+}
 
     // Override biar validasi gagal balik JSON, bukan redirect
     protected function failedValidation(Validator $validator)
