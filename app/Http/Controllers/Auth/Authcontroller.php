@@ -54,33 +54,42 @@ class AuthController extends Controller
     }
 
     public function register(Request $request)
+<<<<<<< HEAD
     {
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', Password::min(8)],
         ]);
+=======
+{
+    $data = $request->validate([
+        'name'     => ['required', 'string', 'max:255'],
+        'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
+        'password' => ['required', Password::min(8)],
+    ]);
+>>>>>>> 96b14f0ffde98cbe672a27f5c5518971fbe8edb0
 
-        // Auto-generate username from name
-        $baseUsername = strtolower(str_replace(' ', '', $data['name']));
-        $username     = $baseUsername;
-        $counter      = 1;
-        while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . $counter++;
-        }
-
-        $user = User::create([
-            'name'     => $data['name'],
-            'username' => $username,
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        Auth::login($user);
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Akun berhasil dibuat. Selamat datang!');
+    $baseUsername = strtolower(str_replace(' ', '', $data['name']));
+    $username     = $baseUsername;
+    $counter      = 1;
+    while (User::where('username', $username)->exists()) {
+        $username = $baseUsername . $counter++;
     }
+
+    $user = User::create([
+        'name'     => $data['name'],
+        'username' => $username,
+        'email'    => $data['email'],
+        'password' => Hash::make($data['password']),
+    ]);
+
+    Auth::login($user);
+
+    // Ubah di sini
+    return redirect()->route('login')
+        ->with('success', 'Akun berhasil dibuat. Silakan login.');
+}
 
     // ────────────────────────────────────────────────
     //  Logout
