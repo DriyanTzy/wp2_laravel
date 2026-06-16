@@ -1,58 +1,83 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* =============================================
+   SurveySwap – Register Page
+   Matches design in SignUp.png exactly
+   ============================================= */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
 
 body {
     font-family: 'Inter', sans-serif;
     display: flex;
-    min-height: 100vh;
-    background: #fff;
+    height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+    color: #1a1a1a;
 }
 
-/* ── Left panel ── */
+/* ── Left Panel ─────────────────────────────── */
 .left-panel {
-    width: 55%;
+    flex: 0 0 55%;
+    max-width: 55%;
+    padding: 48px 80px 48px 120px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 60px 80px;
+    align-items: flex-start;
+    position: relative;
+    background: #ffffff;
+    height: 100vh;
+    overflow-y: auto;
 }
 
-/* Back arrow */
-.back-arrow {
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 32px;
-    color: #1a1a1a;
-    text-decoration: none;
-    font-size: 1.2rem;
+/* Brand */
+.brand {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
     line-height: 1;
 }
-.back-arrow:hover { opacity: 0.6; }
 
-/* Brand / heading */
-.brand {
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+.brand span:first-child {
+    color: #1a1a1a;
 }
-.brand .survey  { color: #1a1a1a; }
-.brand .swap    { color: #e8613a; }
-.brand .sign-up { color: #1a1a1a; }
 
+.brand span:last-child {
+    color: #c0693a;
+}
+
+/* Subtitle */
 .subtitle {
-    color: #6b6b6b;
     font-size: 0.875rem;
+    font-weight: 400;
+    color: #666666;
     margin-bottom: 28px;
 }
 
-
-/* Form */
-.form-group{
-    margin-bottom:14px;
+/* Back link */
+.back-link {
+    display: none; /* hidden as it wasn't prominent in design */
 }
 
-label {
+/* ── Form ───────────────────────────────────── */
+form {
+    width: 100%;
+    max-width: 440px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
     display: block;
     font-size: 0.875rem;
     font-weight: 700;
@@ -60,107 +85,149 @@ label {
     margin-bottom: 6px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.form-group input {
     width: 100%;
-    max-width: 440px;
     padding: 13px 16px;
-    border: 1.5px solid #d0d0d0;
-    border-radius: 10px;
     font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
     color: #1a1a1a;
+    background: #ffffff;
+    border: 1.5px solid #d1d1d1;
+    border-radius: 8px;
     outline: none;
-    transition: border-color .2s;
+    transition: border-color 0.2s;
 }
-input:focus { border-color: #b07a5a; }
-input::placeholder { color: #b0b0b0; }
 
-.hint {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #1a1a1a;
+.form-group input::placeholder {
+    color: #b0b0b0;
+    font-weight: 400;
+}
+
+.form-group input:focus {
+    border-color: #c0693a;
+    box-shadow: 0 0 0 3px rgba(192, 105, 58, 0.12);
+}
+
+.form-group input.is-invalid {
+    border-color: #e53e3e;
+}
+
+/* Field-level errors */
+.field-error {
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: #e53e3e;
+    font-weight: 500;
+}
+
+/* Password hint */
+.form-group input[name="password"] + small,
+.form-group .hint {
+    display: block;
     margin-top: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #1a1a1a;
 }
 
-/* Terms */
-.terms-text {
-    font-size: 0.8rem;
-    color: #4a4a4a;
-    margin-bottom: 28px;
+/* Terms note (mirroring design text under password) */
+form .terms-note {
+    font-size: 0.78rem;
+    color: #666666;
+    margin-bottom: 24px;
     line-height: 1.5;
-    max-width: 440px;
 }
-.terms-text a {
+
+form .terms-note a {
     color: #1a1a1a;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: underline;
 }
-.terms-text a:hover { color: #e8613a; }
 
-/* Submit button */
+/* ── Submit Button ──────────────────────────── */
 .btn-primary {
+    display: block;
     width: 100%;
-    max-width: 440px;
-    padding: 14px;
-    background: #b07a5a;
-    color: #fff;
+    max-width: 260px;
+    padding: 14px 24px;
+    background: #a07855;
+    color: #ffffff;
     font-size: 0.9rem;
     font-weight: 600;
+    font-family: 'Inter', sans-serif;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background .2s;
-}
-.btn-primary:hover { background: #9a6849; }
-
-/* Alerts */
-.alert-error {
-    max-width: 440px;
-    padding: 10px 14px;
-    background: #fff0f0;
-    border: 1px solid #f5c6c6;
-    border-radius: 8px;
-    color: #c0392b;
-    font-size: 0.8rem;
-    margin-bottom: 16px;
-}
-.alert-success {
-    max-width: 440px;
-    padding: 10px 14px;
-    background: #f0fff4;
-    border: 1px solid #b7ebc8;
-    border-radius: 8px;
-    color: #1e8c4a;
-    font-size: 0.8rem;
-    margin-bottom: 16px;
+    text-align: center;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 8px;
 }
 
-/* ── Right panel ── */
-/* .right-panel{
-    width:45%;
-    overflow:hidden;
-    background:#6a2405;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+.btn-primary:hover {
+    background: #8c6645;
 }
 
-.right-panel img{
-    height:100vh;
-    width:auto;
-    display:block;
-} */
-
-.right-panel{
-    width:45%;
-    background-image:url('/css/images/regist.png');
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
-@media (max-width: 768px) {
-    .left-panel  { width: 100%; padding: 40px 24px; }
-    .right-panel { display: none; }
+/* ── Right Panel ────────────────────────────── */
+.right-panel {
+    flex: 0 0 45%;
+    max-width: 45%;
+    height: 100vh;
+    background: #7a3a12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.right-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 900px) {
+    html, body {
+        height: auto;
+        overflow: auto;
+    }
+
+    body {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: none;
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+    }
+
+    .left-panel {
+        padding: 40px 32px;
+        justify-content: flex-start;
+    }
+
+    .right-panel {
+        min-height: 280px;
+        height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .left-panel {
+        padding: 32px 20px;
+    }
+
+    .brand {
+        font-size: 1.6rem;
+    }
 }

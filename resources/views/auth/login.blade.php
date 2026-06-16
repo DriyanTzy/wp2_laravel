@@ -5,200 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – SurveySwap</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 
-        body {
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            min-height: 100vh;
-            background: #fff;
-        }
-
-        /* ── Left panel ── */
-        .left-panel {
-            width: 55%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 60px 80px;
-        }
-
-        .brand {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-        }
-        .brand span:first-child { color: #1a1a1a; }
-        .brand span:last-child  { color: #e8613a; }
-
-        .subtitle {
-            color: #6b6b6b;
-            font-size: 0.875rem;
-            margin-bottom: 40px;
-        }
-
-        .form-group { margin-bottom: 20px; }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 6px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            max-width: 370px;
-            padding: 11px 14px;
-            border: 1px solid #d0d0d0;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            color: #1a1a1a;
-            outline: none;
-            transition: border-color .2s;
-        }
-        input:focus { border-color: #b07a5a; }
-        input::placeholder { color: #aaa; }
-
-        .row-inline {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 370px;
-            margin-bottom: 24px;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            cursor: pointer;
-        }
-        .remember input[type="checkbox"] {
-            width: 15px;
-            height: 15px;
-            accent-color: #b07a5a;
-            cursor: pointer;
-        }
-
-        .forgot-link {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            text-decoration: none;
-        }
-        .forgot-link:hover { text-decoration: underline; }
-
-        .btn-primary {
-            width: 100%;
-            max-width: 370px;
-            padding: 12px;
-            background: #b07a5a;
-            color: #fff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background .2s;
-            margin-bottom: 12px;
-        }
-        .btn-primary:hover { background: #9a6849; }
-
-        .btn-google {
-            width: 100%;
-            max-width: 370px;
-            padding: 11px;
-            background: #fff;
-            color: #1a1a1a;
-            font-size: 0.875rem;
-            font-weight: 600;
-            border: 1.5px solid #d0d0d0;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            transition: background .2s, border-color .2s;
-            margin-bottom: 28px;
-        }
-        .btn-google:hover { background: #f5f5f5; border-color: #bbb; }
-
-        .google-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .signup-text {
-            font-size: 0.8rem;
-            color: #6b6b6b;
-            text-align: center;
-            max-width: 370px;
-        }
-        .signup-text a {
-            color: #e8613a;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .signup-text a:hover { text-decoration: underline; }
-
-        /* Alerts */
-        .alert-error {
-            max-width: 370px;
-            padding: 10px 14px;
-            background: #fff0f0;
-            border: 1px solid #f5c6c6;
-            border-radius: 8px;
-            color: #c0392b;
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-        }
-        .alert-success {
-            max-width: 370px;
-            padding: 10px 14px;
-            background: #f0fff4;
-            border: 1px solid #b7ebc8;
-            border-radius: 8px;
-            color: #1e8c4a;
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-        }
-
-        /* ── Right panel ── */
-        .right-panel {
-            width: 45%;
-            background: #5c2d0a url('/images/surveyswap-bg.jpg') center/cover no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        /* Fallback gradient if image not present */
-        .right-panel::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 40% 40%, #7a3c12 0%, #3d1a06 100%);
-            z-index: 0;
-        }
-        .right-panel img { position: relative; z-index: 1; width: 75%; max-width: 380px; }
-
-        @media (max-width: 768px) {
-            .left-panel { width: 100%; padding: 40px 24px; }
-            .right-panel { display: none; }
-        }
-    </style>
 </head>
 <body>
 
@@ -248,6 +56,7 @@
                 type="password"
                 id="password"
                 name="password"
+                placeholder="Enter your password"
                 required
             >
         </div>
@@ -257,7 +66,7 @@
                 <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                 Remember me
             </label>
-            <a href="{{ route('password.request') }}" class="forgot-link">Forgot password</a>
+            <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
         </div>
 
         <button type="submit" class="btn-primary">Sign in</button>
@@ -276,14 +85,14 @@
 
     <p class="signup-text">
         Don't have an account?
-        <a href="{{ route('register') }}">Sign up to free!</a>
+        <a href="{{ route('register') }}">Sign up here</a>
     </p>
 </div>
 
 <!-- ── Right: Branding panel ── -->
 <div class="right-panel">
     {{-- Ganti src dengan path logo SurveySwap kamu --}}
-    <img src="{{ asset('images/surveyswap-logo.png') }}" alt="SurveySwap">
+    <img src="{{ asset('images/gambar1.png') }}" alt="SurveySwap">
 </div>
 
 </body>

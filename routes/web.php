@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\SurveyController;
-
+// use App\Http\Controllers\PostController;
 /*
 |--------------------------------------------------------------------------
 | Guest routes (Auth)
@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/forgot-password', fn() => view('auth.forgot-password'))->name('password.request');
-    
+
 });
 
 /*
@@ -232,4 +232,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/surveys/create', [SurveyController::class, 'createWeb'])->name('surveys.create');
     Route::post('/surveys', [SurveyController::class, 'store'])->name('surveys.store');
     Route::get('/surveys/{survey}', [SurveyController::class, 'showWeb'])->name('surveys.show');
+
+
+    // Post
+    // Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    // Route::get('/posts/feed', [PostController::class, 'feed'])->name('posts.feed');
+    // Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 });
