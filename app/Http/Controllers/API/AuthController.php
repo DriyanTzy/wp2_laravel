@@ -1,88 +1,85 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // POST /api/register
-    public function register(RegisterRequest $request): JsonResponse
+    // ── Login ────────────────────────────────────────────────────────────────
+
+    public function showLogin()
     {
-        $user = User::create([
-            'name'     => $request->name,
-            'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Registrasi berhasil.',
-            'token'   => $token,
-            'user'    => [
-                'id'       => $user->id,
-                'name'     => $user->name,
-                'username' => $user->username,
-                'email'    => $user->email,
-                'photo'    => $user->photo,
-                'bio'      => $user->bio,
-                'points'   => $user->points,
-            ],
-        ], 201);
+        return view('auth.login');
     }
 
-    // POST /api/login
-    public function login(LoginRequest $request): JsonResponse
+    public function login(Request $request)
     {
-        if (!Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            return response()->json([
-                'message' => 'Username atau password salah.',
-            ], 401);
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $remember = $request->boolean('remember');
+
+        // Support login pakai email atau username
+        $field = filter_var($credentials['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (Auth::attempt([$field => $credentials['username'], 'password' => $credentials['password']], $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('dashboard'))->with('success', 'Login berhasil!');
         }
 
-        $user  = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login berhasil.',
-            'token'   => $token,
-            'user'    => [
-                'id'       => $user->id,
-                'name'     => $user->name,
-                'username' => $user->username,
-                'email'    => $user->email,
-                'photo'    => $user->photo,
-                'bio'      => $user->bio,
-                'points'   => $user->points,
-            ],
-        ]);
+        return back()
+            ->withInput($request->only('username', 'remember'))
+            ->withErrors(['username' => 'Username atau password salah.']);
     }
 
-    // POST /api/logout
-    public function logout(Request $request): JsonResponse
-    {
-        // Hapus token yang sedang dipakai
-        $request->user()->currentAccessToken()->delete();
+    // ── Register ─────────────────────────────────────────────────────────────
 
-        return response()->json([
-            'message' => 'Logout berhasil.',
-        ]);
+    public function showRegister()
+    {
+        return view('auth.register');
     }
 
-    // GET /api/me
-    public function me(Request $request): JsonResponse
+    /**
+     * Pakai RegisterRequest — validasi sudah include:
+     *   name, username (unique, alpha_dash), email (unique), password (confirmed, min8, letters+numbers)
+     * Jika gagal → RegisterRequest lempar JSON 422 (untuk API) atau redirect back (untuk form biasa).
+     *
+     * Catatan: RegisterRequest::failedValidation() throw HttpResponseException (JSON).
+     * Untuk form Blade biasa ini tidak ideal — tapi kita override supaya tetap bisa redirect.
+     */
+    public function register(RegisterRequest $request)
     {
-        return response()->json([
-            'user' => $request->user(),
+        // Data sudah tervalidasi oleh RegisterRequest
+        $validated = $request->validated();
+
+        $user = User::create([
+            'name'     => $validated['name'],
+            'username' => $validated['username'],   // ← dari input user langsung
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'points'   => 0,
         ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Akun berhasil dibuat. Selamat datang!');
+    }
+
+    // ── Logout ───────────────────────────────────────────────────────────────
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login');
     }
 }
