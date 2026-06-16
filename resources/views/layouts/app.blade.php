@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SurveySwap')</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -402,10 +403,10 @@
 </main>
 
 <script>
-// ─── Ambil data user dari API lalu isi sidebar ───────────────────────────────
+// ─── Ambil data user dari endpoint web (bukan API) ────────────────────────
 (async () => {
     try {
-        const res  = await fetch('/api/dashboard', {
+        const res = await fetch('/me-data', {
             headers: {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -414,7 +415,7 @@
         });
         if (!res.ok) throw new Error('Unauthorized');
         const data = await res.json();
-        const u    = data.user;
+        const u = data.user;
 
         const avatarSrc = u.photo
             ? u.photo
@@ -429,7 +430,6 @@
             <div class="sidebar-email">${u.email}</div>
         `;
 
-        // Simpan di sessionStorage buat halaman lain pakai
         sessionStorage.setItem('ss_user', JSON.stringify(u));
     } catch (e) {
         console.warn('Sidebar: gagal ambil user', e);

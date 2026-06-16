@@ -6,7 +6,8 @@
     <title>Register – SurveySwap</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Inter', sans-serif;
             display: flex;
@@ -14,6 +15,7 @@
             background: #fff;
         }
 
+        /* ── Left panel ── */
         .left-panel {
             width: 55%;
             display: flex;
@@ -29,12 +31,12 @@
             font-size: 1.1rem;
             color: #1a1a1a;
             text-decoration: none;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
             width: fit-content;
         }
         .back-link:hover { color: #b07a5a; }
 
-        .form-group { margin-bottom: 22px; }
+        .form-group { margin-bottom: 18px; }
 
         label {
             display: block;
@@ -59,6 +61,15 @@
             background: #fafafa;
         }
         input:focus { border-color: #b07a5a; background: #fff; }
+        input.is-invalid { border-color: #e53e3e; }
+
+        /* inline field error */
+        .field-error {
+            font-size: 0.75rem;
+            color: #c0392b;
+            margin-top: 4px;
+            max-width: 370px;
+        }
 
         .btn-primary {
             width: 100%;
@@ -75,17 +86,6 @@
             margin-top: 8px;
         }
         .btn-primary:hover { background: #9a6849; }
-
-        .alert-error {
-            max-width: 370px;
-            padding: 10px 14px;
-            background: #fff0f0;
-            border: 1px solid #f5c6c6;
-            border-radius: 8px;
-            color: #c0392b;
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-        }
 
         /* Right panel */
         .right-panel {
@@ -106,7 +106,7 @@
         .right-panel img { position: relative; z-index: 1; width: 75%; max-width: 380px; }
 
         @media (max-width: 768px) {
-            .left-panel { width: 100%; padding: 40px 24px; }
+            .left-panel  { width: 100%; padding: 40px 24px; }
             .right-panel { display: none; }
         }
     </style>
@@ -117,17 +117,10 @@
 
     <a href="{{ route('login') }}" class="back-link">&#8592;</a>
 
-    @if ($errors->any())
-        <div class="alert-error">
-            @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="/register">
         @csrf
 
+        {{-- Name --}}
         <div class="form-group">
             <label for="name">Name</label>
             <input
@@ -136,43 +129,63 @@
                 name="name"
                 placeholder="Enter your full name"
                 value="{{ old('name') }}"
+                class="{{ $errors->has('name') ? 'is-invalid' : '' }}"
                 required
                 autofocus
             >
+            @error('name')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Username — wajib karena RegisterRequest mensyaratkan username --}}
         <div class="form-group">
-            <label for="email">Gmail</label>
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Contoh: driyan90 (huruf, angka, - _)"
+                value="{{ old('username') }}"
+                class="{{ $errors->has('username') ? 'is-invalid' : '' }}"
+                required
+            >
+            @error('username')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Email --}}
+        <div class="form-group">
+            <label for="email">Email</label>
             <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your Gmail address"
+                placeholder="Enter your email address"
                 value="{{ old('email') }}"
+                class="{{ $errors->has('email') ? 'is-invalid' : '' }}"
                 required
             >
+            @error('email')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Password --}}
         <div class="form-group">
             <label for="password">Password</label>
             <input
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Create a password"
+                placeholder="Min. 8 karakter, huruf & angka"
+                class="{{ $errors->has('password') ? 'is-invalid' : '' }}"
                 required
             >
-        </div>
-
-        <div class="form-group">
-            <label for="password_confirmation">Confirm Password</label>
-            <input
-                type="password"
-                id="password_confirmation"
-                name="password_confirmation"
-                placeholder="Repeat your password"
-                required
-            >
+            @error('password')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn-primary">Create an account</button>

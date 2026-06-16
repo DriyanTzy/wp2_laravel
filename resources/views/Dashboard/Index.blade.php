@@ -96,17 +96,18 @@ const fmt = n => n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : n
 // ─── Set nilai stat card ──────────────────────────────────────────────────────
 function setStatCard(elId, trendId, value, trendText = null) {
     const el = document.getElementById(elId);
+    if (!el) return;
     el.classList.remove('skeleton');
     el.style = '';
     el.textContent = fmt(value);
 
     if (trendText !== null) {
         const tr = document.getElementById(trendId);
+        if (!tr) return;
         tr.style.visibility = 'visible';
-        // Append teks setelah SVG
         const svg = tr.querySelector('svg');
         tr.textContent = '';
-        tr.appendChild(svg);
+        if (svg) tr.appendChild(svg);
         tr.append(' ' + trendText);
     }
 }
@@ -115,6 +116,7 @@ function setStatCard(elId, trendId, value, trendText = null) {
 const ICONS = ['📋','📊','📝','🗂️','📌','📎'];
 function buildSurveyList(surveys) {
     const wrap = document.getElementById('surveyList');
+    if (!wrap) return;
 
     if (!surveys || surveys.length === 0) {
         wrap.innerHTML = '<p style="color:#999;font-size:.85rem;padding:12px 0">Belum ada survey aktif.</p>';
@@ -135,41 +137,54 @@ function buildSurveyList(surveys) {
     `).join('');
 }
 
-// ─── Fetch /api/dashboard ─────────────────────────────────────────────────────
+// ─── Fetch dari endpoint web (bukan API) ─────────────────────────────────────
 (async () => {
     try {
-        const res = await fetch('/api/dashboard', {
+        const res = await fetch('{{ url("/dashboard-data") }}', {
             headers: {
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
-            credentials: 'same-origin',
+            credentials: 'same-origin'
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data = await res.json();
+
+        // Jika data kosong atau tidak sesuai, tampilkan error
+        if (!data || !data.stats || !data.user) {
+            throw new Error('Data tidak lengkap dari server.');
+        }
 
         const stats = data.stats;
         const user  = data.user;
 
         // Judul halaman
-        document.getElementById('pageTitle').textContent = `Selamat Datang, ${user.name}`;
-        document.getElementById('pageDate').textContent  =
-            new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        const titleEl = document.getElementById('pageTitle');
+        const dateEl = document.getElementById('pageDate');
+        if (titleEl) titleEl.textContent = `Selamat Datang, ${user.name || 'User'}`;
+        if (dateEl) {
+            dateEl.textContent = new Date().toLocaleDateString('id-ID', { 
+                day: 'numeric', month: 'long', year: 'numeric' 
+            });
+        }
 
         // Stat cards
-        setStatCard('valSurveys',   'trendSurveys',   stats.total_surveys,   `${stats.total_surveys} total`);
-        setStatCard('valResponses', 'trendResponses',  stats.total_responses, `${stats.total_datasets} dataset`);
-        setStatCard('valReach',     'trendReach',      stats.total_reach,     'Unique users');
+        setStatCard('valSurveys',   'trendSurveys',   stats.total_surveys ?? 0,   `${stats.total_surveys ?? 0} total`);
+        setStatCard('valResponses', 'trendResponses', stats.total_responses ?? 0, `${stats.total_datasets ?? 0} dataset`);
+        setStatCard('valReach',     'trendReach',     stats.total_reach ?? 0,     'Unique users');
 
         // Survey list
         buildSurveyList(data.active_surveys);
 
     } catch (err) {
+        console.error('Dashboard error:', err);
         const errEl = document.getElementById('apiError');
-        errEl.style.display = 'block';
-        errEl.textContent   = 'Gagal memuat data dashboard. Silakan refresh halaman.';
-        console.error('Dashboard API error:', err);
+        if (errEl) {
+            errEl.style.display = 'block';
+            errEl.textContent = 'Gagal memuat data dashboard. Silakan refresh halaman.';
+        }
     }
 })();
 </script>

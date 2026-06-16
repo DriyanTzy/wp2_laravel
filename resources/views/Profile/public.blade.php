@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('title', 'Profile Saya')
-
 @section('content')
 <style>
     .profile-container {
@@ -15,7 +13,7 @@
     .profile-header {
         padding: 30px 32px;
         display: flex;
-        align-items: center;
+            align-items: center;
         gap: 24px;
         border-bottom: 1px solid #f0f0f0;
     }
@@ -97,6 +95,13 @@
         color: #6b7280;
         margin-top: 4px;
     }
+    .dataset-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #6b7280;
+    }
     .post-item {
         padding: 16px 0;
         border-bottom: 1px solid #f3f4f6;
@@ -118,6 +123,13 @@
         font-size: 13px;
         color: #6b7280;
     }
+    .post-stats {
+        display: flex;
+        gap: 16px;
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 8px;
+    }
     .empty-state {
         text-align: center;
         padding: 40px 0;
@@ -127,6 +139,7 @@
 
 <div class="profile-container">
     <div id="profile-loading" style="padding:40px;text-align:center;color:#6b7280;">Memuat profil...</div>
+    
     <div id="profile-content" style="display:none;">
         <!-- Header -->
         <div class="profile-header">
@@ -160,14 +173,18 @@
             <button class="tab-btn" data-tab="post">Post</button>
         </div>
 
+        <!-- Tab Content -->
         <div id="tabContent" class="tab-content">
             <div class="empty-state">Loading...</div>
         </div>
     </div>
+
     <div id="profile-error" style="display:none;padding:40px;text-align:center;color:#dc2626;">Gagal memuat profil</div>
 </div>
 
 <script>
+    const username = "{{ $username }}";
+
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -192,20 +209,30 @@
         const datasets = data.datasets || [];
         const posts = data.posts || [];
 
+        // Header
         document.getElementById('profile-name').textContent = user.name;
         document.getElementById('profile-email').textContent = user.email;
         document.getElementById('profile-photo').src = user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2563eb&color=fff&size=80`;
 
+        // Stats
         document.getElementById('stat-datasets').textContent = stats.total_datasets || 0;
         document.getElementById('stat-downloads').textContent = (stats.total_downloads || 0).toLocaleString();
         document.getElementById('stat-rating').textContent = stats.avg_rating || 4.4;
 
+        // Tab content functions
         function renderDatasetTab() {
-            if (!datasets.length) return '<div class="empty-state">Belum ada dataset yang diunggah.</div>';
+            if (!datasets.length) {
+                return '<div class="empty-state">Belum ada dataset yang diunggah.</div>';
+            }
             return datasets.map(ds => `
                 <div class="dataset-item">
                     <a href="/datasets/${ds.id}" class="dataset-title">${escapeHtml(ds.title)}</a>
-                    <div class="dataset-meta">${escapeHtml(ds.class) || 'Umum'} • ${ds.present_count || 0} akses • ${formatDate(ds.created_at)}</div>
+                    <div class="dataset-meta">
+                        ${escapeHtml(ds.class) || 'Umum'} • ${ds.present_count || 0} akses • ${formatDate(ds.created_at)}
+                    </div>
+                    <div class="dataset-actions">
+                        <span>⬇️ ${ds.present_count || 0} downloads</span>
+                    </div>
                 </div>
             `).join('');
         }
@@ -228,16 +255,25 @@
         }
 
         function renderPostTab() {
-            if (!posts.length) return '<div class="empty-state">Belum ada postingan.</div>';
+            if (!posts.length) {
+                return '<div class="empty-state">Belum ada postingan.</div>';
+            }
             return posts.map(post => `
                 <div class="post-item">
                     <div class="post-title">${escapeHtml(post.content) || 'Postingan'}</div>
                     <div class="post-content">${escapeHtml(post.content) || ''}</div>
+                    ${post.dataset ? `<div style="font-size:13px;color:#2563eb;margin:6px 0;">📊 Dataset terkait: ${escapeHtml(post.dataset.title)}</div>` : ''}
                     <div class="post-meta">${formatDate(post.created_at)}</div>
+                    <div class="post-stats">
+                        <span>❤️ ${post.likes_count || 0}</span>
+                        <span>💬 ${post.comments_count || 0}</span>
+                        <span>🔁 ${post.shares_count || 0}</span>
+                    </div>
                 </div>
             `).join('');
         }
 
+        // Tab switching
         const tabContent = document.getElementById('tabContent');
         const tabs = document.querySelectorAll('.tab-btn');
 
@@ -246,6 +282,7 @@
                 btn.classList.remove('active');
                 if (btn.dataset.tab === tab) btn.classList.add('active');
             });
+
             if (tab === 'dataset') tabContent.innerHTML = renderDatasetTab();
             else if (tab === 'info') tabContent.innerHTML = renderInfoTab();
             else if (tab === 'post') tabContent.innerHTML = renderPostTab();
@@ -255,13 +292,14 @@
             btn.addEventListener('click', () => switchTab(btn.dataset.tab));
         });
 
+        // Default tab
         switchTab('dataset');
     }
 
-    // Fetch data (gunakan endpoint web)
-    fetch('{{ url("/me-data") }}', {
-        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-        credentials: 'same-origin'
+    // Fetch data
+    fetch('{{ url("/profile-data") }}/' + username, {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'omit'
     })
     .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -270,15 +308,6 @@
     .then(data => {
         document.getElementById('profile-loading').style.display = 'none';
         document.getElementById('profile-content').style.display = 'block';
-        // Data dari /me-data hanya user, kita perlu data lengkap (stats, datasets, posts) dari endpoint lain atau gabung
-        // Karena /me-data hanya user, kita ambil profile-data dengan username sendiri
-        return fetch('{{ url("/profile-data") }}/' + data.user.username);
-    })
-    .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-    })
-    .then(data => {
         renderProfile(data);
     })
     .catch(err => {

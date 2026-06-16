@@ -3,17 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // ────────────────────────────────────────────────
-    //  Login
-    // ────────────────────────────────────────────────
+    // ── Login ────────────────────────────────────────────────────────────────
 
     public function showLogin()
     {
@@ -29,14 +27,12 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        // Attempt login with either username or email
+        // Support login pakai email atau username
         $field = filter_var($credentials['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         if (Auth::attempt([$field => $credentials['username'], 'password' => $credentials['password']], $remember)) {
             $request->session()->regenerate();
-
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Login berhasil!');
+            return redirect()->intended(route('dashboard'))->with('success', 'Login berhasil!');
         }
 
         return back()
@@ -44,54 +40,46 @@ class AuthController extends Controller
             ->withErrors(['username' => 'Username atau password salah.']);
     }
 
-    // ────────────────────────────────────────────────
-    //  Register
-    // ────────────────────────────────────────────────
+    // ── Register ─────────────────────────────────────────────────────────────
 
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    /**
+     * Pakai RegisterRequest — validasi sudah include:
+     *   name, username (unique, alpha_dash), email (unique), password (confirmed, min8, letters+numbers)
+     * Jika gagal → RegisterRequest lempar JSON 422 (untuk API) atau redirect back (untuk form biasa).
+     *
+     * Catatan: RegisterRequest::failedValidation() throw HttpResponseException (JSON).
+     * Untuk form Blade biasa ini tidak ideal — tapi kita override supaya tetap bisa redirect.
+     */
+    public function register(RegisterRequest $request)
     {
-        $data = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ]);
-
-        // Auto-generate username from name
-        $baseUsername = strtolower(str_replace(' ', '', $data['name']));
-        $username     = $baseUsername;
-        $counter      = 1;
-        while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . $counter++;
-        }
+        // Data sudah tervalidasi oleh RegisterRequest
+        $validated = $request->validated();
 
         $user = User::create([
-            'name'     => $data['name'],
-            'username' => $username,
-            'email'    => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name'     => $validated['name'],
+            'username' => $validated['username'],   // ← dari input user langsung
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'points'   => 0,
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Akun berhasil dibuat. Selamat datang!');
+        return redirect()->route('dashboard')->with('success', 'Akun berhasil dibuat. Selamat datang!');
     }
 
-    // ────────────────────────────────────────────────
-    //  Logout
-    // ────────────────────────────────────────────────
+    // ── Logout ───────────────────────────────────────────────────────────────
 
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('login');
     }
 }
